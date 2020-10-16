@@ -9,7 +9,8 @@ PointCloudLibrary(PCL)はC++の3D点群処理ライブラリです。
 今回はあくまで環境構築メインなので、うまく立ち上がって「フムフム」と思っていただければ目的達成です。それでは内容物を見ていきましょう!!  
   
 [Form.cs](/Form.cs) ... UIの部分。  
-[PclWrapper.cs](/PclWrapper.cs) ... C++版PointCloudLibraryのラッパークラス。  
+[PclWrapper.cs](/PclWrapper.cs) ... C#からC++版PointCloudLibraryを呼び出すラッパークラス。  
+[source](/source) ... C++側のビルド時に必要なもの。あとで登場します。  
 肝心のC++のDLLは別ソリューションで作りました。環境依存が強すぎるので共有できません。作り方は下記"How to Use"を参照ください。  
   
 ---  
