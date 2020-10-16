@@ -11,6 +11,7 @@ PointCloudLibrary(PCL)はC++の3D点群処理ライブラリで、法線処理�
 [Form.cs](/Form.cs) ... UIの部分。  
 [PclWrapper.cs](/PclWrapper.cs) ... C#からC++版PointCloudLibraryを呼び出すラッパークラス。  
 [source](/source) ... C++側のビルド時に必要なもの。あとで登場します。  
+[Sample1](/Sample1), [Sample2](/Sample2) ... Kinectで撮影した、点群情報を保持したpng画像です。  
 肝心のC++のDLLは別ソリューションで作りました。環境依存が強すぎるので共有できません。作り方は下記"How to Use"を参照ください。  
   
 ---  
@@ -36,7 +37,7 @@ PointCloudLibrary(PCL)はC++の3D点群処理ライブラリで、法線処理�
 ## C#側
   
 Pathが通っていてDLLさえできていれば、C#側の"デバッグ"ですぐに実行できます。  
-うまくいけば以下のようになります。  
+うまくいけば以下のようになります。画像を開く方ではサンプルしか実行することができません。すみません。  
   
 ![pcl1.png](/pcl1.png)  
   
