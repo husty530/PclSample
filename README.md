@@ -27,7 +27,7 @@ PointCloudLibrary(PCL)はC++の3D点群処理ライブラリです。
 ## C++側
   
 基本的には[コチラ](http://tecsingularity.com/pcl/environment/)にあるとおり環境構築を行います。  
-ただしその記事ではバージョンが古いので、PCL本体は[ココ](https://github.com/PointCloudLibrary/pcl/releases)から最新版を、途中に出てくる"main.cpp"と"CMakeList.txt"はこのリポジトリに同梱しているものを使っていただければ大丈夫です。  
+ただしその記事ではバージョンが古いので、PCL本体は[ココ](https://github.com/PointCloudLibrary/pcl/releases)から最新版を、途中に出てくる"main.cpp"と"CMakeList.txt"はこのリポジトリの[source](/source)に同梱しているものを使っていただければ大丈夫です。  
 書いているとおりにCMakeでソリューションを生成できたら、"project"の名前を"PCL"に、プロパティの"全般"、"詳細"で"プロジェクト名"、"ターゲット名"も"PCL"に、".exe"となっている2か所を".dll"に書き換えます。  
 さらに、プロパティの"全般"→"出力ディレクトリ"にC#の.exeができるディレクトリを書いておき"ビルド"すると、そこにDLLが生成されます。  
   
