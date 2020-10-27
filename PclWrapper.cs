@@ -9,7 +9,7 @@ namespace PclSample
     {
 
         [DllImport("PCL", EntryPoint = "view")]
-        static extern void ViewFromDll(IntPtr x, IntPtr y, IntPtr z, IntPtr r, IntPtr g, IntPtr b, int width, int height);
+        static extern void ViewShortFromDll(IntPtr x, IntPtr y, IntPtr z, IntPtr r, IntPtr g, IntPtr b, int width, int height);
 
         public static void ViewFromPng(string pointPath, string colorPath = null)
         {
@@ -103,7 +103,7 @@ namespace PclSample
             Marshal.Copy(sr, 0, ptrr, len);
             Marshal.Copy(sg, 0, ptrg, len);
             Marshal.Copy(sb, 0, ptrb, len);
-            ViewFromDll(ptrx, ptry, ptrz, ptrr, ptrg, ptrb, width, height);
+            ViewShortFromDll(ptrx, ptry, ptrz, ptrr, ptrg, ptrb, width, height);
             Marshal.FreeCoTaskMem(ptrx);
             Marshal.FreeCoTaskMem(ptry);
             Marshal.FreeCoTaskMem(ptrz);
@@ -112,6 +112,5 @@ namespace PclSample
             Marshal.FreeCoTaskMem(ptrb);
 
         }
-
     }
 }

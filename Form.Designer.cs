@@ -34,14 +34,14 @@
             this.GrayModeButton = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.SliderB = new System.Windows.Forms.TrackBar();
             this.SliderC = new System.Windows.Forms.TrackBar();
             this.SliderA = new System.Windows.Forms.TrackBar();
+            this.SliderB = new System.Windows.Forms.TrackBar();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SliderB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderA)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SliderB)).BeginInit();
             this.SuspendLayout();
             // 
             // OpenButton1
@@ -68,7 +68,7 @@
             // 
             this.ColorModeButton.AutoSize = true;
             this.ColorModeButton.Checked = true;
-            this.ColorModeButton.Location = new System.Drawing.Point(6, 51);
+            this.ColorModeButton.Location = new System.Drawing.Point(6, 66);
             this.ColorModeButton.Name = "ColorModeButton";
             this.ColorModeButton.Size = new System.Drawing.Size(84, 19);
             this.ColorModeButton.TabIndex = 2;
@@ -79,7 +79,7 @@
             // GrayModeButton
             // 
             this.GrayModeButton.AutoSize = true;
-            this.GrayModeButton.Location = new System.Drawing.Point(6, 75);
+            this.GrayModeButton.Location = new System.Drawing.Point(6, 91);
             this.GrayModeButton.Name = "GrayModeButton";
             this.GrayModeButton.Size = new System.Drawing.Size(80, 19);
             this.GrayModeButton.TabIndex = 3;
@@ -93,7 +93,7 @@
             this.groupBox1.Controls.Add(this.GrayModeButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 100);
+            this.groupBox1.Size = new System.Drawing.Size(200, 133);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Open viewer from a source file";
@@ -110,15 +110,6 @@
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Open viewer from custom setting";
-            // 
-            // SliderB
-            // 
-            this.SliderB.Location = new System.Drawing.Point(6, 126);
-            this.SliderB.Maximum = 100;
-            this.SliderB.Minimum = -100;
-            this.SliderB.Name = "SliderB";
-            this.SliderB.Size = new System.Drawing.Size(188, 45);
-            this.SliderB.TabIndex = 8;
             // 
             // SliderC
             // 
@@ -138,6 +129,15 @@
             this.SliderA.Size = new System.Drawing.Size(188, 45);
             this.SliderA.TabIndex = 10;
             // 
+            // SliderB
+            // 
+            this.SliderB.Location = new System.Drawing.Point(6, 126);
+            this.SliderB.Maximum = 100;
+            this.SliderB.Minimum = -100;
+            this.SliderB.Name = "SliderB";
+            this.SliderB.Size = new System.Drawing.Size(188, 45);
+            this.SliderB.TabIndex = 8;
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -151,9 +151,9 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SliderB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderA)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SliderB)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.Compression;
 using System.Windows.Forms;
 
 namespace PclSample
@@ -21,7 +20,7 @@ namespace PclSample
                 {
                     PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png", $"{fbd.SelectedPath}\\C.png");
                 }
-                else
+                else if (GrayModeButton.Checked)
                 {
                     PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png");
                 }
