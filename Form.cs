@@ -44,17 +44,18 @@ namespace PclSample
             if (fbd1.ShowDialog() == DialogResult.OK)
             {
                 source = $"{fbd1.SelectedPath}\\P.png";
+                var fbd2 = new FolderBrowserDialog();
+                fbd2.Description = "フォルダ選択";
+                if (fbd2.ShowDialog() == DialogResult.OK)
+                {
+                    target = $"{fbd2.SelectedPath}\\P.png";
+                    var save = (SaveCheckBox.Checked) ? true : false;
+                    var threshold = (int.Parse(ThreshTx.Text) > 100) ? int.Parse(ThreshTx.Text) : 100;
+                    var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
+                    var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
+                    PclWrapper.ViewMatching(source, target, save, iterations, interval, threshold);
+                }
             }
-            var fbd2 = new FolderBrowserDialog();
-            fbd2.Description = "フォルダ選択";
-            if (fbd2.ShowDialog() == DialogResult.OK)
-            {
-                target = $"{fbd2.SelectedPath}\\P.png";
-            }
-            var save = (SaveCheckBox.Checked) ? true : false;
-            var threshold = int.Parse(ThreshTx.Text);
-            var iterations = int.Parse(IterationsTx.Text);
-            PclWrapper.ViewMatching(source, target, save, iterations, threshold);
         }
     }
 }

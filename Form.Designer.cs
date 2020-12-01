@@ -38,12 +38,14 @@
             this.SliderA = new System.Windows.Forms.TrackBar();
             this.SliderB = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.ThreshTx = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.IterationsTx = new System.Windows.Forms.TextBox();
             this.SaveCheckBox = new System.Windows.Forms.CheckBox();
             this.OpenButton3 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.ThreshTx = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.IntervalTx = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).BeginInit();
@@ -114,7 +116,7 @@
             this.groupBox2.Controls.Add(this.OpenButton2);
             this.groupBox2.Location = new System.Drawing.Point(232, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 277);
+            this.groupBox2.Size = new System.Drawing.Size(200, 302);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Open viewer from custom setting";
@@ -148,6 +150,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.IntervalTx);
+            this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.ThreshTx);
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.label1);
@@ -156,10 +160,27 @@
             this.groupBox3.Controls.Add(this.OpenButton3);
             this.groupBox3.Location = new System.Drawing.Point(13, 152);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(199, 137);
+            this.groupBox3.Size = new System.Drawing.Size(199, 162);
             this.groupBox3.TabIndex = 8;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "ICP Matching";
+            // 
+            // ThreshTx
+            // 
+            this.ThreshTx.Location = new System.Drawing.Point(109, 82);
+            this.ThreshTx.Name = "ThreshTx";
+            this.ThreshTx.Size = new System.Drawing.Size(73, 23);
+            this.ThreshTx.TabIndex = 5;
+            this.ThreshTx.Text = "10000";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 85);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(90, 15);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Distance Thresh";
             // 
             // label1
             // 
@@ -198,28 +219,28 @@
             this.OpenButton3.UseVisualStyleBackColor = true;
             this.OpenButton3.Click += new System.EventHandler(this.OpenButton3_Click);
             // 
-            // label2
+            // label3
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 85);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 15);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Distance Thresh";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 127);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(46, 15);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Interval";
             // 
-            // ThreshTx
+            // IntervalTx
             // 
-            this.ThreshTx.Location = new System.Drawing.Point(109, 82);
-            this.ThreshTx.Name = "ThreshTx";
-            this.ThreshTx.Size = new System.Drawing.Size(73, 23);
-            this.ThreshTx.TabIndex = 5;
-            this.ThreshTx.Text = "10000";
+            this.IntervalTx.Location = new System.Drawing.Point(109, 127);
+            this.IntervalTx.Name = "IntervalTx";
+            this.IntervalTx.Size = new System.Drawing.Size(73, 23);
+            this.IntervalTx.TabIndex = 7;
+            this.IntervalTx.Text = "4";
             // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(444, 301);
+            this.ClientSize = new System.Drawing.Size(444, 326);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -256,6 +277,8 @@
         private System.Windows.Forms.CheckBox SaveCheckBox;
         private System.Windows.Forms.TextBox ThreshTx;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox IntervalTx;
+        private System.Windows.Forms.Label label3;
     }
 }
 

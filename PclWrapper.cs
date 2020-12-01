@@ -21,32 +21,38 @@ namespace PclSample
             var pm = Cv2.ImRead(pointPath, ImreadModes.Unchanged);
             var cm = new Mat(pm.Height, pm.Width, MatType.CV_8UC3, new Scalar(255, 255, 255));
             if(colorPath != null) cm = Cv2.ImRead(colorPath);
-            int len = pm.Width * pm.Height;
-            
-            var sx = new short[len];
-            var sy = new short[len];
-            var sz = new short[len];
-            var sr = new byte[len];
-            var sg = new byte[len];
-            var sb = new byte[len];
+            var count = 0;
+            var xList = new List<short>();
+            var yList = new List<short>();
+            var zList = new List<short>();
+            var bList = new List<byte>();
+            var gList = new List<byte>();
+            var rList = new List<byte>();
             unsafe
             {
                 short* sp = (short*)pm.DataPointer;
-                for (int i = 0; i < len; i++)
-                {
-                    sx[i] = sp[i * 3 + 0];
-                    sy[i] = sp[i * 3 + 1];
-                    sz[i] = sp[i * 3 + 2];
-                }
                 byte* ip = cm.DataPointer;
-                for (int i = 0; i < len; i++)
+                for (int i = 0; i < pm.Width * pm.Height; i++)
                 {
-                    sr[i] = ip[i * 3 + 2];
-                    sg[i] = ip[i * 3 + 1];
-                    sb[i] = ip[i * 3 + 0];
+                    if (sp[i * 3 + 2] > 30)
+                    {
+                        xList.Add(sp[i * 3 + 0]);
+                        yList.Add(sp[i * 3 + 1]);
+                        zList.Add(sp[i * 3 + 2]);
+                        bList.Add(ip[i * 3 + 0]);
+                        gList.Add(ip[i * 3 + 1]);
+                        rList.Add(ip[i * 3 + 2]);
+                        count++;
+                    }
                 }
             }
-            LaunchViewer(sx, sy, sz, sr, sg, sb, pm.Width * pm.Height);
+            var sx = xList.ToArray();
+            var sy = yList.ToArray();
+            var sz = zList.ToArray();
+            var sb = bList.ToArray();
+            var sg = gList.ToArray();
+            var sr = rList.ToArray();
+            LaunchViewer(sx, sy, sz, sr, sg, sb, count);
 
         }
 
@@ -54,14 +60,14 @@ namespace PclSample
         {
             var w = 120;
             var h = 120;
-            var len = w * h;
-            var sx = new short[len];
-            var sy = new short[len];
-            var sz = new short[len];
-            var sr = new byte[len];
-            var sg = new byte[len];
-            var sb = new byte[len];
-            for (int i = 0; i < len / 3; i++)
+            var count = w * h;
+            var sx = new short[count];
+            var sy = new short[count];
+            var sz = new short[count];
+            var sr = new byte[count];
+            var sg = new byte[count];
+            var sb = new byte[count];
+            for (int i = 0; i < count / 3; i++)
             {
                 sx[i] = (short)(a * i + b * 2 - c * i * i + 60);
                 sy[i] = (short)(a * i + Math.Sqrt(b) * i + c * i / 2);
@@ -70,7 +76,7 @@ namespace PclSample
                 sg[i] = 0;
                 sb[i] = 255;
             }
-            for (int i = len / 3; i < len * 2 / 3; i++)
+            for (int i = count / 3; i < count * 2 / 3; i++)
             {
                 sx[i] = (short)(-a * i * i - b * 2 / i + c * c / i + 60);
                 sy[i] = (short)(Math.Sqrt(a) * i + c * i * i / 2 + i * i);
@@ -79,7 +85,7 @@ namespace PclSample
                 sg[i] = 255;
                 sb[i] = 0;
             }
-            for (int i = len * 2 / 3; i < len; i++)
+            for (int i = count * 2 / 3; i < count; i++)
             {
                 sx[i] = (short)(a * i * i + b - c * c - i);
                 sy[i] = (short)(a * a * i + b * 5 / i + Math.Sqrt(c / 2) * i);
@@ -88,10 +94,10 @@ namespace PclSample
                 sg[i] = 0;
                 sb[i] = 0;
             }
-            LaunchViewer(sx, sy, sz, sr, sg, sb, len);
+            LaunchViewer(sx, sy, sz, sr, sg, sb, count);
         }
 
-        public static void ViewMatching(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int threshold)
+        public static void ViewMatching(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval, int threshold)
         {
             var source = Cv2.ImRead(pointSourcePath, ImreadModes.Unchanged);
             var target = Cv2.ImRead(pointTargetPath, ImreadModes.Unchanged);
@@ -107,25 +113,33 @@ namespace PclSample
             unsafe
             {
                 short* sp = (short*)source.DataPointer;
-                for (int i = 0; i < source.Width * source.Height; i++)
+                for (int h = 0; h < source.Height; h += interval)
                 {
-                    if(sp[i * 3 + 2] > 30 && sp[i * 3 + 2] < threshold)
+                    for (int w = 0; w < source.Width; w += interval)
                     {
-                        x1List.Add(sp[i * 3 + 0]);
-                        y1List.Add(sp[i * 3 + 1]);
-                        z1List.Add(sp[i * 3 + 2]);
-                        count1++;
+                        var i = (h * source.Width + w) * 3;
+                        if (sp[i + 2] > 30 && sp[i + 2] < threshold)
+                        {
+                            x1List.Add(sp[i + 0]);
+                            y1List.Add(sp[i + 1]);
+                            z1List.Add(sp[i + 2]);
+                            count1++;
+                        }
                     }
                 }
                 short* tp = (short*)target.DataPointer;
-                for (int i = 0; i < target.Width * target.Height; i++)
+                for (int h = 0; h < target.Height; h += interval)
                 {
-                    if (tp[i * 3 + 2] > 30 && tp[i * 3 + 2] < threshold)
+                    for (int w = 0; w < target.Width; w += interval)
                     {
-                        x2List.Add(tp[i * 3 + 0]);
-                        y2List.Add(tp[i * 3 + 1]);
-                        z2List.Add(tp[i * 3 + 2]);
-                        count2++;
+                        var i = (h * target.Width + w) * 3;
+                        if (tp[i + 2] > 30 && tp[i + 2] < threshold)
+                        {
+                            x2List.Add(tp[i + 0]);
+                            y2List.Add(tp[i + 1]);
+                            z2List.Add(tp[i + 2]);
+                            count2++;
+                        }
                     }
                 }
             }
@@ -143,22 +157,22 @@ namespace PclSample
             }
         }
 
-        private static void LaunchViewer(short[] sx, short[] sy, short[] sz, byte[] sr, byte[] sg, byte[] sb, int len)
+        private static void LaunchViewer(short[] sx, short[] sy, short[] sz, byte[] sr, byte[] sg, byte[] sb, int count)
         {
 
-            IntPtr ptrx = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * len);
-            IntPtr ptry = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * len);
-            IntPtr ptrz = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * len);
-            IntPtr ptrr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * len);
-            IntPtr ptrg = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * len);
-            IntPtr ptrb = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * len);
-            Marshal.Copy(sx, 0, ptrx, len);
-            Marshal.Copy(sy, 0, ptry, len);
-            Marshal.Copy(sz, 0, ptrz, len);
-            Marshal.Copy(sr, 0, ptrr, len);
-            Marshal.Copy(sg, 0, ptrg, len);
-            Marshal.Copy(sb, 0, ptrb, len);
-            ViewShortFromDll(ptrx, ptry, ptrz, ptrr, ptrg, ptrb, len);
+            IntPtr ptrx = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
+            IntPtr ptry = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
+            IntPtr ptrz = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
+            IntPtr ptrr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
+            IntPtr ptrg = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
+            IntPtr ptrb = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
+            Marshal.Copy(sx, 0, ptrx, count);
+            Marshal.Copy(sy, 0, ptry, count);
+            Marshal.Copy(sz, 0, ptrz, count);
+            Marshal.Copy(sr, 0, ptrr, count);
+            Marshal.Copy(sg, 0, ptrg, count);
+            Marshal.Copy(sb, 0, ptrb, count);
+            ViewShortFromDll(ptrx, ptry, ptrz, ptrr, ptrg, ptrb, count);
             Marshal.FreeCoTaskMem(ptrx);
             Marshal.FreeCoTaskMem(ptry);
             Marshal.FreeCoTaskMem(ptrz);
