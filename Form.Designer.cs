@@ -37,11 +37,19 @@
             this.SliderC = new System.Windows.Forms.TrackBar();
             this.SliderA = new System.Windows.Forms.TrackBar();
             this.SliderB = new System.Windows.Forms.TrackBar();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.IterationsTx = new System.Windows.Forms.TextBox();
+            this.SaveCheckBox = new System.Windows.Forms.CheckBox();
+            this.OpenButton3 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.ThreshTx = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderB)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenButton1
@@ -106,7 +114,7 @@
             this.groupBox2.Controls.Add(this.OpenButton2);
             this.groupBox2.Location = new System.Drawing.Point(232, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 242);
+            this.groupBox2.Size = new System.Drawing.Size(200, 277);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Open viewer from custom setting";
@@ -138,11 +146,81 @@
             this.SliderB.Size = new System.Drawing.Size(188, 45);
             this.SliderB.TabIndex = 8;
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.ThreshTx);
+            this.groupBox3.Controls.Add(this.label2);
+            this.groupBox3.Controls.Add(this.label1);
+            this.groupBox3.Controls.Add(this.IterationsTx);
+            this.groupBox3.Controls.Add(this.SaveCheckBox);
+            this.groupBox3.Controls.Add(this.OpenButton3);
+            this.groupBox3.Location = new System.Drawing.Point(13, 152);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(199, 137);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "ICP Matching";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 108);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(82, 15);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Max Iterations";
+            // 
+            // IterationsTx
+            // 
+            this.IterationsTx.Location = new System.Drawing.Point(109, 105);
+            this.IterationsTx.Name = "IterationsTx";
+            this.IterationsTx.Size = new System.Drawing.Size(73, 23);
+            this.IterationsTx.TabIndex = 2;
+            this.IterationsTx.Text = "0";
+            // 
+            // SaveCheckBox
+            // 
+            this.SaveCheckBox.AutoSize = true;
+            this.SaveCheckBox.Location = new System.Drawing.Point(7, 63);
+            this.SaveCheckBox.Name = "SaveCheckBox";
+            this.SaveCheckBox.Size = new System.Drawing.Size(58, 19);
+            this.SaveCheckBox.TabIndex = 1;
+            this.SaveCheckBox.Text = "Save ?";
+            this.SaveCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // OpenButton3
+            // 
+            this.OpenButton3.Location = new System.Drawing.Point(7, 23);
+            this.OpenButton3.Name = "OpenButton3";
+            this.OpenButton3.Size = new System.Drawing.Size(75, 23);
+            this.OpenButton3.TabIndex = 0;
+            this.OpenButton3.Text = "Open";
+            this.OpenButton3.UseVisualStyleBackColor = true;
+            this.OpenButton3.Click += new System.EventHandler(this.OpenButton3_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 85);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(90, 15);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Distance Thresh";
+            // 
+            // ThreshTx
+            // 
+            this.ThreshTx.Location = new System.Drawing.Point(109, 82);
+            this.ThreshTx.Name = "ThreshTx";
+            this.ThreshTx.Size = new System.Drawing.Size(73, 23);
+            this.ThreshTx.TabIndex = 5;
+            this.ThreshTx.Text = "10000";
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(444, 266);
+            this.ClientSize = new System.Drawing.Size(444, 301);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form";
@@ -154,6 +232,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SliderB)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -169,6 +249,13 @@
         private System.Windows.Forms.TrackBar SliderC;
         private System.Windows.Forms.TrackBar SliderA;
         private System.Windows.Forms.TrackBar SliderB;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button OpenButton3;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox IterationsTx;
+        private System.Windows.Forms.CheckBox SaveCheckBox;
+        private System.Windows.Forms.TextBox ThreshTx;
+        private System.Windows.Forms.Label label2;
     }
 }
 
