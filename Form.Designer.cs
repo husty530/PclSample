@@ -38,6 +38,7 @@
             this.SliderA = new System.Windows.Forms.TrackBar();
             this.SliderB = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.AutoRegistrationButton = new System.Windows.Forms.Button();
             this.IntervalTx = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.ThreshTx = new System.Windows.Forms.TextBox();
@@ -46,7 +47,8 @@
             this.IterationsTx = new System.Windows.Forms.TextBox();
             this.SaveCheckBox = new System.Windows.Forms.CheckBox();
             this.OpenButton3 = new System.Windows.Forms.Button();
-            this.AutoRegistrationButton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.LeafSizeTx = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).BeginInit();
@@ -151,6 +153,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.LeafSizeTx);
+            this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Controls.Add(this.AutoRegistrationButton);
             this.groupBox3.Controls.Add(this.IntervalTx);
             this.groupBox3.Controls.Add(this.label3);
@@ -167,9 +171,19 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "ICP Matching";
             // 
+            // AutoRegistrationButton
+            // 
+            this.AutoRegistrationButton.Location = new System.Drawing.Point(7, 202);
+            this.AutoRegistrationButton.Name = "AutoRegistrationButton";
+            this.AutoRegistrationButton.Size = new System.Drawing.Size(118, 35);
+            this.AutoRegistrationButton.TabIndex = 8;
+            this.AutoRegistrationButton.Text = "Auto Registration";
+            this.AutoRegistrationButton.UseVisualStyleBackColor = true;
+            this.AutoRegistrationButton.Click += new System.EventHandler(this.AutoRegistrationButton_Click);
+            // 
             // IntervalTx
             // 
-            this.IntervalTx.Location = new System.Drawing.Point(109, 127);
+            this.IntervalTx.Location = new System.Drawing.Point(109, 134);
             this.IntervalTx.Name = "IntervalTx";
             this.IntervalTx.Size = new System.Drawing.Size(73, 23);
             this.IntervalTx.TabIndex = 7;
@@ -178,7 +192,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 130);
+            this.label3.Location = new System.Drawing.Point(7, 137);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(46, 15);
             this.label3.TabIndex = 6;
@@ -204,7 +218,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 108);
+            this.label1.Location = new System.Drawing.Point(6, 111);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 15);
             this.label1.TabIndex = 3;
@@ -212,7 +226,7 @@
             // 
             // IterationsTx
             // 
-            this.IterationsTx.Location = new System.Drawing.Point(109, 105);
+            this.IterationsTx.Location = new System.Drawing.Point(109, 108);
             this.IterationsTx.Name = "IterationsTx";
             this.IterationsTx.Size = new System.Drawing.Size(73, 23);
             this.IterationsTx.TabIndex = 2;
@@ -238,15 +252,22 @@
             this.OpenButton3.UseVisualStyleBackColor = true;
             this.OpenButton3.Click += new System.EventHandler(this.OpenButton3_Click);
             // 
-            // AutoRegistrationButton
+            // label4
             // 
-            this.AutoRegistrationButton.Location = new System.Drawing.Point(7, 173);
-            this.AutoRegistrationButton.Name = "AutoRegistrationButton";
-            this.AutoRegistrationButton.Size = new System.Drawing.Size(118, 35);
-            this.AutoRegistrationButton.TabIndex = 8;
-            this.AutoRegistrationButton.Text = "Auto Registration";
-            this.AutoRegistrationButton.UseVisualStyleBackColor = true;
-            this.AutoRegistrationButton.Click += new System.EventHandler(this.AutoRegistrationButton_Click);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 166);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(52, 15);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Leaf Size";
+            // 
+            // LeafSizeTx
+            // 
+            this.LeafSizeTx.Location = new System.Drawing.Point(109, 163);
+            this.LeafSizeTx.Name = "LeafSizeTx";
+            this.LeafSizeTx.Size = new System.Drawing.Size(73, 23);
+            this.LeafSizeTx.TabIndex = 10;
+            this.LeafSizeTx.Text = "5";
             // 
             // Form
             // 
@@ -292,6 +313,8 @@
         private System.Windows.Forms.TextBox IntervalTx;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button AutoRegistrationButton;
+        private System.Windows.Forms.TextBox LeafSizeTx;
+        private System.Windows.Forms.Label label4;
     }
 }
 

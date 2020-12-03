@@ -54,7 +54,8 @@ namespace PclSample
                     var threshold = (int.Parse(ThreshTx.Text) > 100) ? int.Parse(ThreshTx.Text) : 100;
                     var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
                     var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
-                    PclWrapper.MatchPoints(source, target, save, iterations, interval, threshold);
+                    var leafSize = (float.Parse(LeafSizeTx.Text) > 0) ? float.Parse(LeafSizeTx.Text) : 1;
+                    PclWrapper.MatchPoints(source, target, save, iterations, interval, threshold, leafSize);
                 }
             }
         }
@@ -69,6 +70,7 @@ namespace PclSample
                 var threshold = (int.Parse(ThreshTx.Text) > 100) ? int.Parse(ThreshTx.Text) : 100;
                 var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
                 var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
+                var leafSize = (float.Parse(LeafSizeTx.Text) > 0) ? float.Parse(LeafSizeTx.Text) : 1;
                 var resultPath = $"D:\\PclDirectory\\RegistrationResult\\P.png";
                 var files = Directory.GetFiles(fbd.SelectedPath, "*P.png", SearchOption.AllDirectories);
                 var first = true;
@@ -77,12 +79,12 @@ namespace PclSample
                 {
                     if (first)
                     {
-                        PclWrapper.MatchPoints(files[0], files[1], true, iterations, interval, threshold);
+                        PclWrapper.MatchPoints(files[0], files[1], true, iterations, interval, threshold, leafSize);
                         first = false;
                     }
                     else
                     {
-                        PclWrapper.MatchPoints(files[i], resultPath, true, iterations, interval, threshold);
+                        PclWrapper.MatchPoints(files[i], resultPath, true, iterations, interval, threshold, leafSize);
                     }
                 }
             }

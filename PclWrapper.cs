@@ -12,7 +12,8 @@ namespace PclSample
         static extern void ViewShortFromDll(IntPtr x, IntPtr y, IntPtr z, IntPtr r, IntPtr g, IntPtr b, int count);
 
         [DllImport("PCL", EntryPoint = "match")]
-        static extern void MatchFromDll(IntPtr x1, IntPtr y1, IntPtr z1, IntPtr x2, IntPtr y2, IntPtr z2, int count1, int count2, out IntPtr ptrTrans, int maximumIterations);
+        static extern void MatchFromDll(IntPtr x1, IntPtr y1, IntPtr z1, IntPtr x2, IntPtr y2, IntPtr z2, out IntPtr x3, out IntPtr y3, out IntPtr z3,
+            int count1, int count2, out int count3, out IntPtr ptrTrans, double magnification, int maximumIterations, float leafsize, bool view);
 
 
         public static void ViewFromPng(string pointPath, string colorPath = null, int threshold = 10000)
@@ -97,11 +98,47 @@ namespace PclSample
             LaunchViewer(sx, sy, sz, sr, sg, sb, count);
         }
 
-        public static void MatchPoints(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval, int threshold)
+        public static void MatchPoints(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval, int threshold, float leafSize)
         {
             var source = Cv2.ImRead(pointSourcePath, ImreadModes.Unchanged);
             var target = Cv2.ImRead(pointTargetPath, ImreadModes.Unchanged);
+            var transMat = Match(source, target, out short[] x, out short[] y, out short[] z, out int count, interval, threshold, maximumIterations, leafSize);
+            if (save)
+            {
+                //var transformed = Transform3D(source, transMat);
+                //var result = Merge(target, transformed, threshold);
+                var result = PointCloudToMat(x, y, z, count);
+                Cv2.ImWrite($"D:\\PclDirectory\\RegistrationResult\\P.png", result);
+            }
+        }
 
+        private static void LaunchViewer(short[] sx, short[] sy, short[] sz, byte[] sr, byte[] sg, byte[] sb, int count)
+        {
+
+            IntPtr ptrx = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
+            IntPtr ptry = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
+            IntPtr ptrz = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
+            IntPtr ptrr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
+            IntPtr ptrg = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
+            IntPtr ptrb = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
+            Marshal.Copy(sx, 0, ptrx, count);
+            Marshal.Copy(sy, 0, ptry, count);
+            Marshal.Copy(sz, 0, ptrz, count);
+            Marshal.Copy(sr, 0, ptrr, count);
+            Marshal.Copy(sg, 0, ptrg, count);
+            Marshal.Copy(sb, 0, ptrb, count);
+            ViewShortFromDll(ptrx, ptry, ptrz, ptrr, ptrg, ptrb, count);
+            Marshal.FreeCoTaskMem(ptrx);
+            Marshal.FreeCoTaskMem(ptry);
+            Marshal.FreeCoTaskMem(ptrz);
+            Marshal.FreeCoTaskMem(ptrr);
+            Marshal.FreeCoTaskMem(ptrg);
+            Marshal.FreeCoTaskMem(ptrb);
+
+        }
+
+        private static Mat Match(Mat source, Mat target, out short[] x, out short[] y, out short[] z, out int count, int interval, int threshold, int maximumIterations, float leafSize)
+        {
             var count1 = 0;
             var count2 = 0;
             var x1List = new List<short>();
@@ -149,42 +186,6 @@ namespace PclSample
             var x2 = x2List.ToArray();
             var y2 = y2List.ToArray();
             var z2 = z2List.ToArray();
-            var transMat = MatchPoints(x1, y1, z1, x2, y2, z2, count1, count2, maximumIterations);
-            if (save)
-            {
-                var transformed = Transform3D(source, transMat);
-                var result = Merge(target, transformed, threshold);
-                Cv2.ImWrite($"D:\\PclDirectory\\RegistrationResult\\P.png", result);
-            }
-        }
-
-        private static void LaunchViewer(short[] sx, short[] sy, short[] sz, byte[] sr, byte[] sg, byte[] sb, int count)
-        {
-
-            IntPtr ptrx = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
-            IntPtr ptry = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
-            IntPtr ptrz = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count);
-            IntPtr ptrr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
-            IntPtr ptrg = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
-            IntPtr ptrb = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * count);
-            Marshal.Copy(sx, 0, ptrx, count);
-            Marshal.Copy(sy, 0, ptry, count);
-            Marshal.Copy(sz, 0, ptrz, count);
-            Marshal.Copy(sr, 0, ptrr, count);
-            Marshal.Copy(sg, 0, ptrg, count);
-            Marshal.Copy(sb, 0, ptrb, count);
-            ViewShortFromDll(ptrx, ptry, ptrz, ptrr, ptrg, ptrb, count);
-            Marshal.FreeCoTaskMem(ptrx);
-            Marshal.FreeCoTaskMem(ptry);
-            Marshal.FreeCoTaskMem(ptrz);
-            Marshal.FreeCoTaskMem(ptrr);
-            Marshal.FreeCoTaskMem(ptrg);
-            Marshal.FreeCoTaskMem(ptrb);
-
-        }
-
-        private static Mat MatchPoints(short[] x1, short[] y1, short[] z1, short[] x2, short[] y2, short[] z2, int count1, int count2, int maximumIterations)
-        {
 
             IntPtr ptrx1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count1);
             IntPtr ptry1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count1);
@@ -192,6 +193,9 @@ namespace PclSample
             IntPtr ptrx2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count2);
             IntPtr ptry2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count2);
             IntPtr ptrz2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count2);
+            IntPtr ptrx3 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * (count1 + count2));
+            IntPtr ptry3 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * (count1 + count2));
+            IntPtr ptrz3 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * (count1 + count2));
             IntPtr ptrTrans = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(double)) * 16);
             Marshal.Copy(x1, 0, ptrx1, count1);
             Marshal.Copy(y1, 0, ptry1, count1);
@@ -199,9 +203,17 @@ namespace PclSample
             Marshal.Copy(x2, 0, ptrx2, count2);
             Marshal.Copy(y2, 0, ptry2, count2);
             Marshal.Copy(z2, 0, ptrz2, count2);
-            MatchFromDll(ptrx1, ptry1, ptrz1, ptrx2, ptry2, ptrz2, count1, count2, out ptrTrans, maximumIterations);
+            MatchFromDll(ptrx1, ptry1, ptrz1, ptrx2, ptry2, ptrz2, out ptrx3, out ptry3, out ptrz3,
+                count1, count2, out int count3, out ptrTrans, 1, maximumIterations, leafSize, true);
             var trans = new double[16];
             Marshal.Copy(ptrTrans, trans, 0, 16);
+            count = count3;
+            x = new short[count];
+            y = new short[count];
+            z = new short[count];
+            Marshal.Copy(ptrx3, x, 0, count);
+            Marshal.Copy(ptry3, y, 0, count);
+            Marshal.Copy(ptrz3, z, 0, count);
             Marshal.FreeCoTaskMem(ptrx1);
             Marshal.FreeCoTaskMem(ptry1);
             Marshal.FreeCoTaskMem(ptrz1);
@@ -211,6 +223,19 @@ namespace PclSample
 
             return new Mat(4, 4, MatType.CV_64F, trans);
 
+        }
+
+        unsafe private static Mat PointCloudToMat(short[] x, short[] y, short[] z, int count)
+        {
+            var img = new Mat(count, 1, MatType.CV_16UC3);
+            var p = (short*)img.DataPointer;
+            for(int i = 0; i < count; i++)
+            {
+                p[i * 3 + 0] = x[i];
+                p[i * 3 + 1] = y[i];
+                p[i * 3 + 2] = z[i];
+            }
+            return img;
         }
 
         private static Mat Transform3D(Mat img, Mat transMat)
@@ -247,54 +272,5 @@ namespace PclSample
             return result;
         }
 
-        //mp1とmp2は同じサイズ
-        private unsafe static Mat Merge(Mat mp1, Mat mp2, int threshold, int count = 1)
-        {
-            var zenhan = (double)count / (count + 1);
-            var kouhan = 1.0 / (count + 1);
-            var result = new Mat(mp1.Height, mp1.Width, MatType.CV_16UC3);
-            ushort* upr = (ushort*)result.DataPointer;
-            ushort* up1 = (ushort*)mp1.DataPointer;
-            ushort* up2 = (ushort*)mp2.DataPointer;
-            for (int h = 0; h < mp1.Height * zenhan; h ++)
-            {
-                for (int w = 0; w < mp1.Width; w ++)
-                {
-                    if(up1[(int)(h * mp1.Width / zenhan + w) * 3 + 2] < threshold)
-                    {
-                        upr[(h * mp1.Width + w) * 3 + 0] = up1[(int)(h * mp1.Width / zenhan + w) * 3 + 0];
-                        upr[(h * mp1.Width + w) * 3 + 1] = up1[(int)(h * mp1.Width / zenhan + w) * 3 + 1];
-                        upr[(h * mp1.Width + w) * 3 + 2] = up1[(int)(h * mp1.Width / zenhan + w) * 3 + 2];
-                    }
-                    else
-                    {
-                        upr[(h * mp1.Width + w) * 3 + 0] = 0;
-                        upr[(h * mp1.Width + w) * 3 + 1] = 0;
-                        upr[(h * mp1.Width + w) * 3 + 2] = 0;
-                    }
-                }
-            }
-            for (int h = 0; h < mp1.Height * kouhan; h++)
-            {
-                for (int w = 0; w < mp1.Width; w++)
-                {
-                    if(up2[(int)(h * mp1.Width / kouhan + w) * 3 + 2] < threshold)
-                    {
-                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 0] = up2[(int)(h * mp1.Width / kouhan + w) * 3 + 0];
-                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 1] = up2[(int)(h * mp1.Width / kouhan + w) * 3 + 1];
-                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 2] = up2[(int)(h * mp1.Width / kouhan + w) * 3 + 2];
-                    }
-                    else
-                    {
-                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 0] = 0;
-                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 1] = 0;
-                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 2] = 0;
-                    }
-                }
-            }
-
-            return result;
-
-        }
     }
 }
