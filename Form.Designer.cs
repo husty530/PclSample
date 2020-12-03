@@ -38,14 +38,15 @@
             this.SliderA = new System.Windows.Forms.TrackBar();
             this.SliderB = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.IntervalTx = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.ThreshTx = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.IterationsTx = new System.Windows.Forms.TextBox();
             this.SaveCheckBox = new System.Windows.Forms.CheckBox();
             this.OpenButton3 = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.IntervalTx = new System.Windows.Forms.TextBox();
+            this.AutoRegistrationButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).BeginInit();
@@ -77,22 +78,22 @@
             // ColorModeButton
             // 
             this.ColorModeButton.AutoSize = true;
-            this.ColorModeButton.Checked = true;
-            this.ColorModeButton.Location = new System.Drawing.Point(6, 66);
+            this.ColorModeButton.Location = new System.Drawing.Point(6, 76);
             this.ColorModeButton.Name = "ColorModeButton";
             this.ColorModeButton.Size = new System.Drawing.Size(84, 19);
             this.ColorModeButton.TabIndex = 2;
-            this.ColorModeButton.TabStop = true;
             this.ColorModeButton.Text = "ColorMode";
             this.ColorModeButton.UseVisualStyleBackColor = true;
             // 
             // GrayModeButton
             // 
             this.GrayModeButton.AutoSize = true;
-            this.GrayModeButton.Location = new System.Drawing.Point(6, 91);
+            this.GrayModeButton.Checked = true;
+            this.GrayModeButton.Location = new System.Drawing.Point(6, 51);
             this.GrayModeButton.Name = "GrayModeButton";
             this.GrayModeButton.Size = new System.Drawing.Size(80, 19);
             this.GrayModeButton.TabIndex = 3;
+            this.GrayModeButton.TabStop = true;
             this.GrayModeButton.Text = "GrayMode";
             this.GrayModeButton.UseVisualStyleBackColor = true;
             // 
@@ -103,7 +104,7 @@
             this.groupBox1.Controls.Add(this.GrayModeButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 133);
+            this.groupBox1.Size = new System.Drawing.Size(200, 104);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Open viewer from a source file";
@@ -114,16 +115,16 @@
             this.groupBox2.Controls.Add(this.SliderA);
             this.groupBox2.Controls.Add(this.SliderB);
             this.groupBox2.Controls.Add(this.OpenButton2);
-            this.groupBox2.Location = new System.Drawing.Point(232, 12);
+            this.groupBox2.Location = new System.Drawing.Point(12, 126);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 302);
+            this.groupBox2.Size = new System.Drawing.Size(200, 209);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Open viewer from custom setting";
             // 
             // SliderC
             // 
-            this.SliderC.Location = new System.Drawing.Point(6, 177);
+            this.SliderC.Location = new System.Drawing.Point(6, 161);
             this.SliderC.Maximum = 100;
             this.SliderC.Minimum = -100;
             this.SliderC.Name = "SliderC";
@@ -132,7 +133,7 @@
             // 
             // SliderA
             // 
-            this.SliderA.Location = new System.Drawing.Point(6, 75);
+            this.SliderA.Location = new System.Drawing.Point(6, 59);
             this.SliderA.Maximum = 100;
             this.SliderA.Minimum = -100;
             this.SliderA.Name = "SliderA";
@@ -141,7 +142,7 @@
             // 
             // SliderB
             // 
-            this.SliderB.Location = new System.Drawing.Point(6, 126);
+            this.SliderB.Location = new System.Drawing.Point(6, 110);
             this.SliderB.Maximum = 100;
             this.SliderB.Minimum = -100;
             this.SliderB.Name = "SliderB";
@@ -150,6 +151,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.AutoRegistrationButton);
             this.groupBox3.Controls.Add(this.IntervalTx);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.ThreshTx);
@@ -158,12 +160,29 @@
             this.groupBox3.Controls.Add(this.IterationsTx);
             this.groupBox3.Controls.Add(this.SaveCheckBox);
             this.groupBox3.Controls.Add(this.OpenButton3);
-            this.groupBox3.Location = new System.Drawing.Point(13, 152);
+            this.groupBox3.Location = new System.Drawing.Point(218, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(199, 162);
+            this.groupBox3.Size = new System.Drawing.Size(199, 323);
             this.groupBox3.TabIndex = 8;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "ICP Matching";
+            // 
+            // IntervalTx
+            // 
+            this.IntervalTx.Location = new System.Drawing.Point(109, 127);
+            this.IntervalTx.Name = "IntervalTx";
+            this.IntervalTx.Size = new System.Drawing.Size(73, 23);
+            this.IntervalTx.TabIndex = 7;
+            this.IntervalTx.Text = "4";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 130);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(46, 15);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Interval";
             // 
             // ThreshTx
             // 
@@ -202,11 +221,11 @@
             // SaveCheckBox
             // 
             this.SaveCheckBox.AutoSize = true;
-            this.SaveCheckBox.Location = new System.Drawing.Point(7, 63);
+            this.SaveCheckBox.Location = new System.Drawing.Point(7, 57);
             this.SaveCheckBox.Name = "SaveCheckBox";
-            this.SaveCheckBox.Size = new System.Drawing.Size(58, 19);
+            this.SaveCheckBox.Size = new System.Drawing.Size(118, 19);
             this.SaveCheckBox.TabIndex = 1;
-            this.SaveCheckBox.Text = "Save ?";
+            this.SaveCheckBox.Text = "Merge and Save ?";
             this.SaveCheckBox.UseVisualStyleBackColor = true;
             // 
             // OpenButton3
@@ -219,28 +238,21 @@
             this.OpenButton3.UseVisualStyleBackColor = true;
             this.OpenButton3.Click += new System.EventHandler(this.OpenButton3_Click);
             // 
-            // label3
+            // AutoRegistrationButton
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 127);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(46, 15);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Interval";
-            // 
-            // IntervalTx
-            // 
-            this.IntervalTx.Location = new System.Drawing.Point(109, 127);
-            this.IntervalTx.Name = "IntervalTx";
-            this.IntervalTx.Size = new System.Drawing.Size(73, 23);
-            this.IntervalTx.TabIndex = 7;
-            this.IntervalTx.Text = "4";
+            this.AutoRegistrationButton.Location = new System.Drawing.Point(7, 173);
+            this.AutoRegistrationButton.Name = "AutoRegistrationButton";
+            this.AutoRegistrationButton.Size = new System.Drawing.Size(118, 35);
+            this.AutoRegistrationButton.TabIndex = 8;
+            this.AutoRegistrationButton.Text = "Auto Registration";
+            this.AutoRegistrationButton.UseVisualStyleBackColor = true;
+            this.AutoRegistrationButton.Click += new System.EventHandler(this.AutoRegistrationButton_Click);
             // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(444, 326);
+            this.ClientSize = new System.Drawing.Size(429, 342);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -279,6 +291,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox IntervalTx;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button AutoRegistrationButton;
     }
 }
 

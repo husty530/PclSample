@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace PclSample
@@ -18,11 +19,11 @@ namespace PclSample
             {
                 if (ColorModeButton.Checked)
                 {
-                    PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png", $"{fbd.SelectedPath}\\C.png");
+                    PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png", $"{fbd.SelectedPath}\\C.png", int.Parse(ThreshTx.Text));
                 }
                 else if (GrayModeButton.Checked)
                 {
-                    PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png");
+                    PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png", null, int.Parse(ThreshTx.Text));
                 }
             }
         }
@@ -53,7 +54,36 @@ namespace PclSample
                     var threshold = (int.Parse(ThreshTx.Text) > 100) ? int.Parse(ThreshTx.Text) : 100;
                     var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
                     var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
-                    PclWrapper.ViewMatching(source, target, save, iterations, interval, threshold);
+                    PclWrapper.MatchPoints(source, target, save, iterations, interval, threshold);
+                }
+            }
+        }
+
+        private void AutoRegistrationButton_Click(object sender, EventArgs e)
+        {
+            var fbd = new FolderBrowserDialog();
+            fbd.Description = "フォルダ選択";
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                var save = (SaveCheckBox.Checked) ? true : false;
+                var threshold = (int.Parse(ThreshTx.Text) > 100) ? int.Parse(ThreshTx.Text) : 100;
+                var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
+                var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
+                var resultPath = $"D:\\PclDirectory\\RegistrationResult\\P.png";
+                var files = Directory.GetFiles(fbd.SelectedPath, "*P.png", SearchOption.AllDirectories);
+                var first = true;
+                if (!save) return;
+                for(int i = 0; i < files.Length; i++)
+                {
+                    if (first)
+                    {
+                        PclWrapper.MatchPoints(files[0], files[1], true, iterations, interval, threshold);
+                        first = false;
+                    }
+                    else
+                    {
+                        PclWrapper.MatchPoints(files[i], resultPath, true, iterations, interval, threshold);
+                    }
                 }
             }
         }

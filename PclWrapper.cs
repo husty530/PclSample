@@ -15,7 +15,7 @@ namespace PclSample
         static extern void MatchFromDll(IntPtr x1, IntPtr y1, IntPtr z1, IntPtr x2, IntPtr y2, IntPtr z2, int count1, int count2, out IntPtr ptrTrans, int maximumIterations);
 
 
-        public static void ViewFromPng(string pointPath, string colorPath = null)
+        public static void ViewFromPng(string pointPath, string colorPath = null, int threshold = 10000)
         {
 
             var pm = Cv2.ImRead(pointPath, ImreadModes.Unchanged);
@@ -34,7 +34,7 @@ namespace PclSample
                 byte* ip = cm.DataPointer;
                 for (int i = 0; i < pm.Width * pm.Height; i++)
                 {
-                    if (sp[i * 3 + 2] > 30)
+                    if (sp[i * 3 + 2] > 30 && sp[i * 3 + 2] < threshold)
                     {
                         xList.Add(sp[i * 3 + 0]);
                         yList.Add(sp[i * 3 + 1]);
@@ -97,7 +97,7 @@ namespace PclSample
             LaunchViewer(sx, sy, sz, sr, sg, sb, count);
         }
 
-        public static void ViewMatching(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval, int threshold)
+        public static void MatchPoints(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval, int threshold)
         {
             var source = Cv2.ImRead(pointSourcePath, ImreadModes.Unchanged);
             var target = Cv2.ImRead(pointTargetPath, ImreadModes.Unchanged);
@@ -152,8 +152,9 @@ namespace PclSample
             var transMat = MatchPoints(x1, y1, z1, x2, y2, z2, count1, count2, maximumIterations);
             if (save)
             {
-                var result = Transform3D(source, transMat);
-                Cv2.ImWrite($"D:\\pairs\\Result\\P.png", result);
+                var transformed = Transform3D(source, transMat);
+                var result = Merge(target, transformed, threshold);
+                Cv2.ImWrite($"D:\\PclDirectory\\RegistrationResult\\P.png", result);
             }
         }
 
@@ -244,6 +245,56 @@ namespace PclSample
 
             }
             return result;
+        }
+
+        //mp1とmp2は同じサイズ
+        private unsafe static Mat Merge(Mat mp1, Mat mp2, int threshold, int count = 1)
+        {
+            var zenhan = (double)count / (count + 1);
+            var kouhan = 1.0 / (count + 1);
+            var result = new Mat(mp1.Height, mp1.Width, MatType.CV_16UC3);
+            ushort* upr = (ushort*)result.DataPointer;
+            ushort* up1 = (ushort*)mp1.DataPointer;
+            ushort* up2 = (ushort*)mp2.DataPointer;
+            for (int h = 0; h < mp1.Height * zenhan; h ++)
+            {
+                for (int w = 0; w < mp1.Width; w ++)
+                {
+                    if(up1[(int)(h * mp1.Width / zenhan + w) * 3 + 2] < threshold)
+                    {
+                        upr[(h * mp1.Width + w) * 3 + 0] = up1[(int)(h * mp1.Width / zenhan + w) * 3 + 0];
+                        upr[(h * mp1.Width + w) * 3 + 1] = up1[(int)(h * mp1.Width / zenhan + w) * 3 + 1];
+                        upr[(h * mp1.Width + w) * 3 + 2] = up1[(int)(h * mp1.Width / zenhan + w) * 3 + 2];
+                    }
+                    else
+                    {
+                        upr[(h * mp1.Width + w) * 3 + 0] = 0;
+                        upr[(h * mp1.Width + w) * 3 + 1] = 0;
+                        upr[(h * mp1.Width + w) * 3 + 2] = 0;
+                    }
+                }
+            }
+            for (int h = 0; h < mp1.Height * kouhan; h++)
+            {
+                for (int w = 0; w < mp1.Width; w++)
+                {
+                    if(up2[(int)(h * mp1.Width / kouhan + w) * 3 + 2] < threshold)
+                    {
+                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 0] = up2[(int)(h * mp1.Width / kouhan + w) * 3 + 0];
+                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 1] = up2[(int)(h * mp1.Width / kouhan + w) * 3 + 1];
+                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 2] = up2[(int)(h * mp1.Width / kouhan + w) * 3 + 2];
+                    }
+                    else
+                    {
+                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 0] = 0;
+                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 1] = 0;
+                        upr[(int)(mp1.Width * mp1.Height * zenhan * 3) + (h * mp1.Width + w) * 3 + 2] = 0;
+                    }
+                }
+            }
+
+            return result;
+
         }
     }
 }
