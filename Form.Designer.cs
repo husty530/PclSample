@@ -30,14 +30,14 @@
         {
             this.OpenButton1 = new System.Windows.Forms.Button();
             this.OpenButton2 = new System.Windows.Forms.Button();
-            this.ColorModeButton = new System.Windows.Forms.RadioButton();
-            this.GrayModeButton = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.SliderC = new System.Windows.Forms.TrackBar();
             this.SliderA = new System.Windows.Forms.TrackBar();
             this.SliderB = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.LeafSizeTx = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.AutoRegistrationButton = new System.Windows.Forms.Button();
             this.IntervalTx = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -47,8 +47,7 @@
             this.IterationsTx = new System.Windows.Forms.TextBox();
             this.SaveCheckBox = new System.Windows.Forms.CheckBox();
             this.OpenButton3 = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.LeafSizeTx = new System.Windows.Forms.TextBox();
+            this.ColorCheck = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).BeginInit();
@@ -77,33 +76,9 @@
             this.OpenButton2.UseVisualStyleBackColor = true;
             this.OpenButton2.Click += new System.EventHandler(this.OpenButton2_Click);
             // 
-            // ColorModeButton
-            // 
-            this.ColorModeButton.AutoSize = true;
-            this.ColorModeButton.Location = new System.Drawing.Point(6, 76);
-            this.ColorModeButton.Name = "ColorModeButton";
-            this.ColorModeButton.Size = new System.Drawing.Size(84, 19);
-            this.ColorModeButton.TabIndex = 2;
-            this.ColorModeButton.Text = "ColorMode";
-            this.ColorModeButton.UseVisualStyleBackColor = true;
-            // 
-            // GrayModeButton
-            // 
-            this.GrayModeButton.AutoSize = true;
-            this.GrayModeButton.Checked = true;
-            this.GrayModeButton.Location = new System.Drawing.Point(6, 51);
-            this.GrayModeButton.Name = "GrayModeButton";
-            this.GrayModeButton.Size = new System.Drawing.Size(80, 19);
-            this.GrayModeButton.TabIndex = 3;
-            this.GrayModeButton.TabStop = true;
-            this.GrayModeButton.Text = "GrayMode";
-            this.GrayModeButton.UseVisualStyleBackColor = true;
-            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.OpenButton1);
-            this.groupBox1.Controls.Add(this.ColorModeButton);
-            this.groupBox1.Controls.Add(this.GrayModeButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 104);
@@ -158,22 +133,37 @@
             this.groupBox3.Controls.Add(this.AutoRegistrationButton);
             this.groupBox3.Controls.Add(this.IntervalTx);
             this.groupBox3.Controls.Add(this.label3);
-            this.groupBox3.Controls.Add(this.ThreshTx);
-            this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.IterationsTx);
             this.groupBox3.Controls.Add(this.SaveCheckBox);
             this.groupBox3.Controls.Add(this.OpenButton3);
-            this.groupBox3.Location = new System.Drawing.Point(218, 12);
+            this.groupBox3.Location = new System.Drawing.Point(218, 126);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(199, 323);
+            this.groupBox3.Size = new System.Drawing.Size(199, 209);
             this.groupBox3.TabIndex = 8;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "ICP Matching";
             // 
+            // LeafSizeTx
+            // 
+            this.LeafSizeTx.Location = new System.Drawing.Point(109, 137);
+            this.LeafSizeTx.Name = "LeafSizeTx";
+            this.LeafSizeTx.Size = new System.Drawing.Size(73, 23);
+            this.LeafSizeTx.TabIndex = 10;
+            this.LeafSizeTx.Text = "5";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 140);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(52, 15);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Leaf Size";
+            // 
             // AutoRegistrationButton
             // 
-            this.AutoRegistrationButton.Location = new System.Drawing.Point(7, 202);
+            this.AutoRegistrationButton.Location = new System.Drawing.Point(7, 166);
             this.AutoRegistrationButton.Name = "AutoRegistrationButton";
             this.AutoRegistrationButton.Size = new System.Drawing.Size(118, 35);
             this.AutoRegistrationButton.TabIndex = 8;
@@ -183,7 +173,7 @@
             // 
             // IntervalTx
             // 
-            this.IntervalTx.Location = new System.Drawing.Point(109, 134);
+            this.IntervalTx.Location = new System.Drawing.Point(109, 111);
             this.IntervalTx.Name = "IntervalTx";
             this.IntervalTx.Size = new System.Drawing.Size(73, 23);
             this.IntervalTx.TabIndex = 7;
@@ -192,7 +182,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 137);
+            this.label3.Location = new System.Drawing.Point(7, 114);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(46, 15);
             this.label3.TabIndex = 6;
@@ -200,7 +190,7 @@
             // 
             // ThreshTx
             // 
-            this.ThreshTx.Location = new System.Drawing.Point(109, 82);
+            this.ThreshTx.Location = new System.Drawing.Point(327, 22);
             this.ThreshTx.Name = "ThreshTx";
             this.ThreshTx.Size = new System.Drawing.Size(73, 23);
             this.ThreshTx.TabIndex = 5;
@@ -209,7 +199,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 85);
+            this.label2.Location = new System.Drawing.Point(225, 25);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(90, 15);
             this.label2.TabIndex = 4;
@@ -218,7 +208,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 111);
+            this.label1.Location = new System.Drawing.Point(7, 89);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 15);
             this.label1.TabIndex = 3;
@@ -226,7 +216,7 @@
             // 
             // IterationsTx
             // 
-            this.IterationsTx.Location = new System.Drawing.Point(109, 108);
+            this.IterationsTx.Location = new System.Drawing.Point(109, 86);
             this.IterationsTx.Name = "IterationsTx";
             this.IterationsTx.Size = new System.Drawing.Size(73, 23);
             this.IterationsTx.TabIndex = 2;
@@ -235,7 +225,7 @@
             // SaveCheckBox
             // 
             this.SaveCheckBox.AutoSize = true;
-            this.SaveCheckBox.Location = new System.Drawing.Point(7, 57);
+            this.SaveCheckBox.Location = new System.Drawing.Point(7, 51);
             this.SaveCheckBox.Name = "SaveCheckBox";
             this.SaveCheckBox.Size = new System.Drawing.Size(118, 19);
             this.SaveCheckBox.TabIndex = 1;
@@ -244,7 +234,7 @@
             // 
             // OpenButton3
             // 
-            this.OpenButton3.Location = new System.Drawing.Point(7, 23);
+            this.OpenButton3.Location = new System.Drawing.Point(7, 22);
             this.OpenButton3.Name = "OpenButton3";
             this.OpenButton3.Size = new System.Drawing.Size(75, 23);
             this.OpenButton3.TabIndex = 0;
@@ -252,35 +242,30 @@
             this.OpenButton3.UseVisualStyleBackColor = true;
             this.OpenButton3.Click += new System.EventHandler(this.OpenButton3_Click);
             // 
-            // label4
+            // ColorCheck
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 166);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(52, 15);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Leaf Size";
-            // 
-            // LeafSizeTx
-            // 
-            this.LeafSizeTx.Location = new System.Drawing.Point(109, 163);
-            this.LeafSizeTx.Name = "LeafSizeTx";
-            this.LeafSizeTx.Size = new System.Drawing.Size(73, 23);
-            this.LeafSizeTx.TabIndex = 10;
-            this.LeafSizeTx.Text = "5";
+            this.ColorCheck.AutoSize = true;
+            this.ColorCheck.Location = new System.Drawing.Point(225, 54);
+            this.ColorCheck.Name = "ColorCheck";
+            this.ColorCheck.Size = new System.Drawing.Size(62, 19);
+            this.ColorCheck.TabIndex = 9;
+            this.ColorCheck.Text = "Color ?";
+            this.ColorCheck.UseVisualStyleBackColor = true;
             // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(429, 342);
+            this.Controls.Add(this.ColorCheck);
             this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.ThreshTx);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form";
             this.Text = "PCL Sample";
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SliderC)).EndInit();
@@ -289,6 +274,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -296,8 +282,6 @@
 
         private System.Windows.Forms.Button OpenButton1;
         private System.Windows.Forms.Button OpenButton2;
-        private System.Windows.Forms.RadioButton ColorModeButton;
-        private System.Windows.Forms.RadioButton GrayModeButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TrackBar SliderC;
@@ -315,6 +299,7 @@
         private System.Windows.Forms.Button AutoRegistrationButton;
         private System.Windows.Forms.TextBox LeafSizeTx;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox ColorCheck;
     }
 }
 

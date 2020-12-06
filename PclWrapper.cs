@@ -11,50 +11,23 @@ namespace PclSample
         [DllImport("PCL", EntryPoint = "view")]
         static extern void ViewShortFromDll(IntPtr x, IntPtr y, IntPtr z, IntPtr r, IntPtr g, IntPtr b, int count);
 
-        [DllImport("PCL", EntryPoint = "match")]
+        [DllImport("PCL", EntryPoint = "match_XYZ")]
         static extern void MatchFromDll(IntPtr x1, IntPtr y1, IntPtr z1, IntPtr x2, IntPtr y2, IntPtr z2, out IntPtr x3, out IntPtr y3, out IntPtr z3,
             int count1, int count2, out int count3, out IntPtr ptrTrans, double magnification, int maximumIterations, float leafsize, bool view);
 
+        [DllImport("PCL", EntryPoint = "match_XYZRGB")]
+        static extern void MatchFromDllWithColor(IntPtr x1, IntPtr y1, IntPtr z1, IntPtr r1, IntPtr g1, IntPtr b1, 
+            IntPtr x2, IntPtr y2, IntPtr z2, IntPtr r2, IntPtr g2, IntPtr b2, 
+            out IntPtr x3, out IntPtr y3, out IntPtr z3, out IntPtr r3, out IntPtr g3, out IntPtr b3,
+            int count1, int count2, out int count3, out IntPtr ptrTrans, double magnification, int maximumIterations, float leafsize, bool view);
 
         public static void ViewFromPng(string pointPath, string colorPath = null, int threshold = 10000)
         {
-
             var pm = Cv2.ImRead(pointPath, ImreadModes.Unchanged);
             var cm = new Mat(pm.Height, pm.Width, MatType.CV_8UC3, new Scalar(255, 255, 255));
             if(colorPath != null) cm = Cv2.ImRead(colorPath);
-            var count = 0;
-            var xList = new List<short>();
-            var yList = new List<short>();
-            var zList = new List<short>();
-            var bList = new List<byte>();
-            var gList = new List<byte>();
-            var rList = new List<byte>();
-            unsafe
-            {
-                short* sp = (short*)pm.DataPointer;
-                byte* ip = cm.DataPointer;
-                for (int i = 0; i < pm.Width * pm.Height; i++)
-                {
-                    if (sp[i * 3 + 2] > 30 && sp[i * 3 + 2] < threshold)
-                    {
-                        xList.Add(sp[i * 3 + 0]);
-                        yList.Add(sp[i * 3 + 1]);
-                        zList.Add(sp[i * 3 + 2]);
-                        bList.Add(ip[i * 3 + 0]);
-                        gList.Add(ip[i * 3 + 1]);
-                        rList.Add(ip[i * 3 + 2]);
-                        count++;
-                    }
-                }
-            }
-            var sx = xList.ToArray();
-            var sy = yList.ToArray();
-            var sz = zList.ToArray();
-            var sb = bList.ToArray();
-            var sg = gList.ToArray();
-            var sr = rList.ToArray();
-            LaunchViewer(sx, sy, sz, sr, sg, sb, count);
-
+            var points = MatToPointCloudXyzBgr(pm, cm, 1, threshold);
+            LaunchViewer(points.X, points.Y, points.Z, points.R, points.G, points.B, points.Count);
         }
 
         public static void ViewCustomImage(int a, int b, int c)
@@ -98,17 +71,32 @@ namespace PclSample
             LaunchViewer(sx, sy, sz, sr, sg, sb, count);
         }
 
-        public static void MatchPoints(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval, int threshold, float leafSize)
+        public static void MatchPoints(string pointSourcePath, string pointTargetPath, bool save, int maximumIterations, int interval1, int interval2, int threshold, float leafSize)
         {
             var source = Cv2.ImRead(pointSourcePath, ImreadModes.Unchanged);
             var target = Cv2.ImRead(pointTargetPath, ImreadModes.Unchanged);
-            var transMat = Match(source, target, out short[] x, out short[] y, out short[] z, out int count, interval, threshold, maximumIterations, leafSize);
+            var results = Match(source, target, interval1, interval2, threshold, maximumIterations, leafSize);
             if (save)
             {
-                //var transformed = Transform3D(source, transMat);
-                //var result = Merge(target, transformed, threshold);
-                var result = PointCloudToMat(x, y, z, count);
+                var result = PointCloudArrayToMat(results.X, results.Y, results.Z, results.Count);
                 Cv2.ImWrite($"D:\\PclDirectory\\RegistrationResult\\P.png", result);
+            }
+        }
+
+        public static void MatchPointsWithColor(string colorSourcePath, string pointSourcePath, string colorTargetPath, string pointTargetPath, 
+            bool save, int maximumIterations, int interval1, int interval2, int threshold, float leafSize)
+        {
+            var sourceC = Cv2.ImRead(colorSourcePath);
+            var targetC = Cv2.ImRead(colorTargetPath);
+            var sourceP = Cv2.ImRead(pointSourcePath, ImreadModes.Unchanged);
+            var targetP = Cv2.ImRead(pointTargetPath, ImreadModes.Unchanged);
+            var results = MatchWithColor(sourceP, sourceC, targetP, targetC, interval1, interval2, threshold, maximumIterations, leafSize);
+            if (save)
+            {
+                var resultP = PointCloudArrayToMat(results.X, results.Y, results.Z, results.Count);
+                var resultC = ColorArrayToMat(results.R, results.G, results.B, results.Count);
+                Cv2.ImWrite($"D:\\PclDirectory\\RegistrationResult\\P.png", resultP);
+                Cv2.ImWrite($"D:\\PclDirectory\\RegistrationResult\\C.png", resultC);
             }
         }
 
@@ -134,83 +122,32 @@ namespace PclSample
             Marshal.FreeCoTaskMem(ptrr);
             Marshal.FreeCoTaskMem(ptrg);
             Marshal.FreeCoTaskMem(ptrb);
-
         }
 
-        private static Mat Match(Mat source, Mat target, out short[] x, out short[] y, out short[] z, out int count, int interval, int threshold, int maximumIterations, float leafSize)
+        private static (short[] X, short[] Y, short[] Z, int Count, Mat Transform) Match(Mat source, Mat target, int interval1, int interval2, int threshold, int maximumIterations, float leafSize)
         {
-            var count1 = 0;
-            var count2 = 0;
-            var x1List = new List<short>();
-            var y1List = new List<short>();
-            var z1List = new List<short>();
-            var x2List = new List<short>();
-            var y2List = new List<short>();
-            var z2List = new List<short>();
-            unsafe
-            {
-                short* sp = (short*)source.DataPointer;
-                for (int h = 0; h < source.Height; h += interval)
-                {
-                    for (int w = 0; w < source.Width; w += interval)
-                    {
-                        var i = (h * source.Width + w) * 3;
-                        if (sp[i + 2] > 30 && sp[i + 2] < threshold)
-                        {
-                            x1List.Add(sp[i + 0]);
-                            y1List.Add(sp[i + 1]);
-                            z1List.Add(sp[i + 2]);
-                            count1++;
-                        }
-                    }
-                }
-                short* tp = (short*)target.DataPointer;
-                for (int h = 0; h < target.Height; h += interval)
-                {
-                    for (int w = 0; w < target.Width; w += interval)
-                    {
-                        var i = (h * target.Width + w) * 3;
-                        if (tp[i + 2] > 30 && tp[i + 2] < threshold)
-                        {
-                            x2List.Add(tp[i + 0]);
-                            y2List.Add(tp[i + 1]);
-                            z2List.Add(tp[i + 2]);
-                            count2++;
-                        }
-                    }
-                }
-            }
-            var x1 = x1List.ToArray();
-            var y1 = y1List.ToArray();
-            var z1 = z1List.ToArray();
-            var x2 = x2List.ToArray();
-            var y2 = y2List.ToArray();
-            var z2 = z2List.ToArray();
-
-            IntPtr ptrx1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count1);
-            IntPtr ptry1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count1);
-            IntPtr ptrz1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count1);
-            IntPtr ptrx2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count2);
-            IntPtr ptry2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count2);
-            IntPtr ptrz2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * count2);
-            IntPtr ptrx3 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * (count1 + count2));
-            IntPtr ptry3 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * (count1 + count2));
-            IntPtr ptrz3 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * (count1 + count2));
-            IntPtr ptrTrans = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(double)) * 16);
-            Marshal.Copy(x1, 0, ptrx1, count1);
-            Marshal.Copy(y1, 0, ptry1, count1);
-            Marshal.Copy(z1, 0, ptrz1, count1);
-            Marshal.Copy(x2, 0, ptrx2, count2);
-            Marshal.Copy(y2, 0, ptry2, count2);
-            Marshal.Copy(z2, 0, ptrz2, count2);
-            MatchFromDll(ptrx1, ptry1, ptrz1, ptrx2, ptry2, ptrz2, out ptrx3, out ptry3, out ptrz3,
-                count1, count2, out int count3, out ptrTrans, 1, maximumIterations, leafSize, true);
+            var points1 = MatToPointCloudXyz(source, interval1, threshold);
+            var points2 = MatToPointCloudXyz(target, interval2, threshold);
+            IntPtr ptrx1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points1.Count);
+            IntPtr ptry1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points1.Count);
+            IntPtr ptrz1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points1.Count);
+            IntPtr ptrx2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points2.Count);
+            IntPtr ptry2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points2.Count);
+            IntPtr ptrz2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points2.Count);
+            Marshal.Copy(points1.X, 0, ptrx1, points1.Count);
+            Marshal.Copy(points1.Y, 0, ptry1, points1.Count);
+            Marshal.Copy(points1.Z, 0, ptrz1, points1.Count);
+            Marshal.Copy(points2.X, 0, ptrx2, points2.Count);
+            Marshal.Copy(points2.Y, 0, ptry2, points2.Count);
+            Marshal.Copy(points2.Z, 0, ptrz2, points2.Count);
+            MatchFromDll(ptrx1, ptry1, ptrz1, ptrx2, ptry2, ptrz2, out IntPtr ptrx3, out IntPtr ptry3, out IntPtr ptrz3,
+                points2.Count, points2.Count, out int count3, out IntPtr ptrTrans, 1, maximumIterations, leafSize, true);
             var trans = new double[16];
             Marshal.Copy(ptrTrans, trans, 0, 16);
-            count = count3;
-            x = new short[count];
-            y = new short[count];
-            z = new short[count];
+            var count = count3;
+            var x = new short[count];
+            var y = new short[count];
+            var z = new short[count];
             Marshal.Copy(ptrx3, x, 0, count);
             Marshal.Copy(ptry3, y, 0, count);
             Marshal.Copy(ptrz3, z, 0, count);
@@ -221,11 +158,127 @@ namespace PclSample
             Marshal.FreeCoTaskMem(ptry2);
             Marshal.FreeCoTaskMem(ptrz2);
 
-            return new Mat(4, 4, MatType.CV_64F, trans);
+            return (x, y, z, count, new Mat(4, 4, MatType.CV_64F, trans));
 
         }
 
-        unsafe private static Mat PointCloudToMat(short[] x, short[] y, short[] z, int count)
+        private static (short[] X, short[] Y, short[] Z, byte[] B, byte[] G, byte[] R, int Count, Mat Transform) MatchWithColor(Mat sourceP, Mat sourceC, Mat targetP, Mat targetC, int interval1, int interval2, int threshold, int maximumIterations, float leafSize)
+        {
+            
+            var points1 = MatToPointCloudXyzBgr(sourceP, sourceC, interval1, threshold);
+            var points2 = MatToPointCloudXyzBgr(targetP, targetC, interval2, threshold);
+
+            TransformXZ(ref points1.X, ref points1.Y, ref points1.Z, points1.Count, new Point(0, 400), -38);
+
+            IntPtr ptrx1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points1.Count);
+            IntPtr ptry1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points1.Count);
+            IntPtr ptrz1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points1.Count);
+            IntPtr ptrb1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * points1.Count);
+            IntPtr ptrg1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * points1.Count);
+            IntPtr ptrr1 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * points1.Count);
+            IntPtr ptrx2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points2.Count);
+            IntPtr ptry2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points2.Count);
+            IntPtr ptrz2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(short)) * points2.Count);
+            IntPtr ptrb2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * points2.Count);
+            IntPtr ptrg2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * points2.Count);
+            IntPtr ptrr2 = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(byte)) * points2.Count);
+            Marshal.Copy(points1.X, 0, ptrx1, points1.Count);
+            Marshal.Copy(points1.Y, 0, ptry1, points1.Count);
+            Marshal.Copy(points1.Z, 0, ptrz1, points1.Count);
+            Marshal.Copy(points1.B, 0, ptrb1, points1.Count);
+            Marshal.Copy(points1.G, 0, ptrg1, points1.Count);
+            Marshal.Copy(points1.R, 0, ptrr1, points1.Count);
+            Marshal.Copy(points2.X, 0, ptrx2, points2.Count);
+            Marshal.Copy(points2.Y, 0, ptry2, points2.Count);
+            Marshal.Copy(points2.Z, 0, ptrz2, points2.Count);
+            Marshal.Copy(points2.B, 0, ptrb2, points2.Count);
+            Marshal.Copy(points2.G, 0, ptrg2, points2.Count);
+            Marshal.Copy(points2.R, 0, ptrr2, points2.Count);
+            MatchFromDllWithColor(ptrx1, ptry1, ptrz1, ptrr1, ptrg1, ptrb1, ptrx2, ptry2, ptrz2, ptrr2, ptrg2, ptrb2,
+                out IntPtr ptrx3, out IntPtr ptry3, out IntPtr ptrz3, out IntPtr ptrr3, out IntPtr ptrg3, out IntPtr ptrb3,
+                points1.Count, points2.Count, out int count3, out IntPtr ptrTrans, 1, maximumIterations, leafSize, true);
+            var trans = new double[16];
+            Marshal.Copy(ptrTrans, trans, 0, 16);
+            var count = count3;
+            var x = new short[count];
+            var y = new short[count];
+            var z = new short[count];
+            var b = new byte[count];
+            var g = new byte[count];
+            var r = new byte[count];
+            Marshal.Copy(ptrx3, x, 0, count);
+            Marshal.Copy(ptry3, y, 0, count);
+            Marshal.Copy(ptrz3, z, 0, count);
+            Marshal.Copy(ptrb3, b, 0, count);
+            Marshal.Copy(ptrg3, g, 0, count);
+            Marshal.Copy(ptrr3, r, 0, count);
+            Marshal.FreeCoTaskMem(ptrx1);
+            Marshal.FreeCoTaskMem(ptry1);
+            Marshal.FreeCoTaskMem(ptrz1);
+            Marshal.FreeCoTaskMem(ptrx2);
+            Marshal.FreeCoTaskMem(ptry2);
+            Marshal.FreeCoTaskMem(ptrz2);
+
+            return (x, y, z, b, g, r, count, new Mat(4, 4, MatType.CV_64F, trans));
+
+        }
+
+        unsafe private static (short[] X, short[] Y, short[] Z, int Count) MatToPointCloudXyz(Mat pMat, int interval, int threshold)
+        {
+            var count = 0;
+            var xList = new List<short>();
+            var yList = new List<short>();
+            var zList = new List<short>();
+            short* sp = (short*)pMat.DataPointer;
+            for (int h = 0; h < pMat.Height; h += interval)
+            {
+                for (int w = 0; w < pMat.Width; w += interval)
+                {
+                    var i = (h * pMat.Width + w) * 3;
+                    if (sp[i + 2] > 30 && sp[i + 2] < threshold)
+                    {
+                        xList.Add(sp[i + 0]);
+                        yList.Add(sp[i + 1]);
+                        zList.Add(sp[i + 2]);
+                        count++;
+                    }
+                }
+            }
+            return (xList.ToArray(), yList.ToArray(), zList.ToArray(), count);
+        }
+
+        unsafe private static (short[] X, short[] Y, short[] Z, byte[] B, byte[] G, byte[] R, int Count) MatToPointCloudXyzBgr(Mat pMat, Mat cMat, int interval, int threshold)
+        {
+            var count = 0;
+            var xList = new List<short>();
+            var yList = new List<short>();
+            var zList = new List<short>();
+            var bList = new List<byte>();
+            var gList = new List<byte>();
+            var rList = new List<byte>();
+            short* sp = (short*)pMat.DataPointer;
+            byte* ip = cMat.DataPointer;
+            for (int h = 0; h < pMat.Height; h += interval)
+            {
+                for (int w = 0; w < pMat.Width; w += interval)
+                {
+                    var i = (h * pMat.Width + w) * 3;
+                    if (sp[i + 2] > 30 && sp[i + 2] < threshold)
+                    {
+                        xList.Add(sp[i + 0]);
+                        yList.Add(sp[i + 1]);
+                        zList.Add(sp[i + 2]);
+                        bList.Add(ip[i + 0]);
+                        gList.Add(ip[i + 1]);
+                        rList.Add(ip[i + 2]);
+                        count++;
+                    }
+                }
+            }
+            return (xList.ToArray(), yList.ToArray(), zList.ToArray(), bList.ToArray(), gList.ToArray(), rList.ToArray(), count);
+        }
+
+        unsafe private static Mat PointCloudArrayToMat(short[] x, short[] y, short[] z, int count)
         {
             var img = new Mat(count, 1, MatType.CV_16UC3);
             var p = (short*)img.DataPointer;
@@ -234,6 +287,19 @@ namespace PclSample
                 p[i * 3 + 0] = x[i];
                 p[i * 3 + 1] = y[i];
                 p[i * 3 + 2] = z[i];
+            }
+            return img;
+        }
+
+        unsafe private static Mat ColorArrayToMat(byte[] r, byte[] g, byte[] b, int count)
+        {
+            var img = new Mat(count, 1, MatType.CV_8UC3);
+            var p = img.DataPointer;
+            for (int i = 0; i < count; i++)
+            {
+                p[i * 3 + 0] = b[i];
+                p[i * 3 + 1] = g[i];
+                p[i * 3 + 2] = r[i];
             }
             return img;
         }
@@ -267,10 +333,43 @@ namespace PclSample
                     r[yn] = (ushort)(p[xn] * lc + p[yn] * cc + p[zn] * rc + ty * 100);
                     r[zn] = (ushort)(p[xn] * lb + p[yn] * cb + p[zn] * rb + tz * 100);
                 }
-
             }
             return result;
         }
 
+        unsafe private static void TransformXZ(ref short[] x, ref short[] y, ref short[] z, int count, Point centerXZ, double thetaDeg)
+        {
+            for(int i = 0; i < count; i++)
+            {
+                x[i] = (short)(x[i] - centerXZ.X);
+                z[i] = (short)(z[i] - centerXZ.Y);
+            }
+
+            var thetaRad = thetaDeg * Math.PI / 180;
+            var lt = Math.Cos(thetaRad);
+            var ct = 0.0;
+            var rt = -Math.Sin(thetaRad);
+            var lb = Math.Sin(thetaRad);
+            var cb = 0.0;
+            var rb = Math.Cos(thetaRad);
+
+            var tmpx = new short[count];
+            var tmpy = new short[count];
+            var tmpz = new short[count];
+            for (int i = 0; i < count; i++)
+            {
+                var xn = i * 3 + 0;
+                var yn = i * 3 + 1;
+                var zn = i * 3 + 2;
+                tmpx[i] = (short)(x[i] * lt + y[i] * ct + z[i] * rt);
+                tmpz[i] = (short)(x[i] * lb + y[i] * cb + z[i] * rb);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                x[i] = (short)(tmpx[i] + centerXZ.X);
+                z[i] = (short)(tmpz[i] + centerXZ.Y);
+            }
+        }
     }
 }

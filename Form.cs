@@ -6,6 +6,8 @@ namespace PclSample
 {
     public partial class Form : System.Windows.Forms.Form
     {
+
+
         public Form()
         {
             InitializeComponent();
@@ -17,11 +19,11 @@ namespace PclSample
             fbd.Description = "フォルダ選択";
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                if (ColorModeButton.Checked)
+                if (ColorCheck.Checked)
                 {
                     PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png", $"{fbd.SelectedPath}\\C.png", int.Parse(ThreshTx.Text));
                 }
-                else if (GrayModeButton.Checked)
+                else
                 {
                     PclWrapper.ViewFromPng($"{fbd.SelectedPath}\\P.png", null, int.Parse(ThreshTx.Text));
                 }
@@ -38,24 +40,31 @@ namespace PclSample
 
         private void OpenButton3_Click(object sender, EventArgs e)
         {
-            string source = "";
-            string target = "";
             var fbd1 = new FolderBrowserDialog();
             fbd1.Description = "フォルダ選択";
             if (fbd1.ShowDialog() == DialogResult.OK)
             {
-                source = $"{fbd1.SelectedPath}\\P.png";
+                var sourceP = $"{fbd1.SelectedPath}\\P.png";
+                var sourceC = $"{fbd1.SelectedPath}\\C.png";
                 var fbd2 = new FolderBrowserDialog();
                 fbd2.Description = "フォルダ選択";
                 if (fbd2.ShowDialog() == DialogResult.OK)
                 {
-                    target = $"{fbd2.SelectedPath}\\P.png";
+                    var targetP = $"{fbd2.SelectedPath}\\P.png";
+                    var targetC = $"{fbd2.SelectedPath}\\C.png";
                     var save = (SaveCheckBox.Checked) ? true : false;
                     var threshold = (int.Parse(ThreshTx.Text) > 100) ? int.Parse(ThreshTx.Text) : 100;
                     var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
                     var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
                     var leafSize = (float.Parse(LeafSizeTx.Text) > 0) ? float.Parse(LeafSizeTx.Text) : 1;
-                    PclWrapper.MatchPoints(source, target, save, iterations, interval, threshold, leafSize);
+                    if (!ColorCheck.Checked)
+                    {
+                        PclWrapper.MatchPoints(sourceP, targetP, save, iterations, interval, interval, threshold, leafSize);
+                    }
+                    else
+                    {
+                        PclWrapper.MatchPointsWithColor(sourceC, sourceP, targetC, targetP, save, iterations, interval, interval, threshold, leafSize);
+                    }
                 }
             }
         }
@@ -71,20 +80,36 @@ namespace PclSample
                 var iterations = (int.Parse(IterationsTx.Text) > 0) ? int.Parse(IterationsTx.Text) : 0;
                 var interval = (int.Parse(IntervalTx.Text) > 0) ? int.Parse(IntervalTx.Text) : 1;
                 var leafSize = (float.Parse(LeafSizeTx.Text) > 0) ? float.Parse(LeafSizeTx.Text) : 1;
-                var resultPath = $"D:\\PclDirectory\\RegistrationResult\\P.png";
-                var files = Directory.GetFiles(fbd.SelectedPath, "*P.png", SearchOption.AllDirectories);
+                var resultPathP = $"D:\\PclDirectory\\RegistrationResult\\P.png";
+                var resultPathC = $"D:\\PclDirectory\\RegistrationResult\\C.png";
+                var filesP = Directory.GetFiles(fbd.SelectedPath, "*P.png", SearchOption.AllDirectories);
+                var filesC = Directory.GetFiles(fbd.SelectedPath, "*C.png", SearchOption.AllDirectories);
                 var first = true;
                 if (!save) return;
-                for(int i = 0; i < files.Length; i++)
+                for(int i = 0; i < filesP.Length; i++)
                 {
                     if (first)
                     {
-                        PclWrapper.MatchPoints(files[0], files[1], true, iterations, interval, threshold, leafSize);
+                        if (!ColorCheck.Checked)
+                        {
+                            PclWrapper.MatchPoints(filesP[0], filesP[1], true, iterations, interval, interval, threshold, leafSize);
+                        }
+                        else
+                        {
+                            PclWrapper.MatchPointsWithColor(filesC[0], filesP[0], filesC[1], filesP[1], save, iterations, interval, interval, threshold, leafSize);
+                        }
                         first = false;
                     }
                     else
                     {
-                        PclWrapper.MatchPoints(files[i], resultPath, true, iterations, interval, threshold, leafSize);
+                        if (!ColorCheck.Checked)
+                        {
+                            PclWrapper.MatchPoints(filesP[i], resultPathP, true, iterations, interval, 1, threshold, leafSize);
+                        }
+                        else
+                        {
+                            PclWrapper.MatchPointsWithColor(filesC[i], filesP[i], resultPathC, resultPathP, save, iterations, interval, 1, threshold, leafSize);
+                        }
                     }
                 }
             }
